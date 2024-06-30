@@ -1,0 +1,7 @@
+<%= turbo_frame_tag id='new_message' do %>
+    <%= form_with model: @message, id: 'message-form' do |f| %>
+        <%= f.text_field :body, placeholder: 'Say something', id: 'message-input', 'data-action':'focus->messages#scroll'%>
+        <%= f.hidden_field :chat_id, :value => params[:chat_id]%>
+        <%= f.submit 'Send', class: 'button is-link is-small', 'data-action': 'click->forms#clear'%>
+    <% end %>
+<% end %>

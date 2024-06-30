@@ -1,0 +1,24 @@
+<head>
+    <% stylesheet_link_tag 'general'%>
+</head>
+<%= render partial:'layouts/hero', locals: {'status': 'feed'}%>
+
+<div id="chats">
+    <% @friends.each do |friend| %>
+        <div class="user-pic">
+            <%= link_to chat_path(find_chat(@chats, friend)) do %>
+                <%= image_tag(friend.profile_picture, class: 'profile-pic') %>
+            <% end %>
+            <div class="user-date">
+            <%= link_to chat_path(find_chat(@chats, friend)), remote: true, method: :post do %>
+                    <p class='post-user'><%= friend.first_name+' '+friend.last_name %></p>
+                    <% begin %>
+                        <p class='post-user'><%= find_chat(@chats, friend).messages.last.body%></p>
+                        <p class='post-user'><%= date(find_chat(@chats, friend).messages.last)%></p>
+                    <% rescue %>
+                    <% end%>
+                <% end %>
+            </div>
+        </div>
+    <% end %>
+</div>

@@ -1,0 +1,17 @@
+<div class="user-pic">
+    <%= link_to user_path(@friend) do %>
+        <%= image_tag(@friend.profile_picture, class: 'profile-pic') %>
+    <% end %>
+    <div class="user-date">
+    <%= link_to user_path(@friend) do %>
+        <p class='post-user'><%= @friend.first_name+' '+@friend.last_name %></p>
+    <% end %>
+    </div>
+</div>
+<% @messages.each do |mes| %>
+    <div class='message'>
+        <%= mes.body %>
+        <%= mes.created_at.strftime('%D, %R')%>
+    </div>
+<% end %>
+<%= turbo_frame_tag id='new_message', src: new_message_path(chat_id: params[:id])%>
