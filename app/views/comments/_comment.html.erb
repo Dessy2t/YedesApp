@@ -1,0 +1,11 @@
+<div class='comment'>
+    <div class="user-pic">
+        <%= link_to user_path(comment.user) do %>
+            <%= image_tag(comment.user.profile_picture, class: 'profile-pic') %>
+        <div class="user-date">
+            <p class='comment-user'><%= comment.user.first_name+' '+comment.user.last_name %></p>
+        <% end %>
+            <p><%= comment.body %></p>
+        </div>
+    </div>
+</div>

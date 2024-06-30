@@ -1,0 +1,10 @@
+<%= turbo_frame_tag id='comments-frame' do %>
+    <div id='new-comment'>
+        <%= image_tag(current_user.profile_picture, class: 'profile-pic-comment') %>
+            <%= form_with model: @comment do |f| %>
+                <%= f.hidden_field :post_id, :value => params[:post_id] %>
+                <%= f.text_field :body, placeholder: 'Add a comment', required: true, id: "comment_body_#{params[:post_id]}"%>
+                <%= f.submit 'Send', class: 'button is-small is-rounded unfocused'%>
+            <% end %>
+    </div>
+<% end %>

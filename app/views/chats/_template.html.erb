@@ -1,0 +1,36 @@
+<div id="chat" data-chat-id= <%= @chat.slug %> data-controller='messages' data-messages-target='chat'>
+    <div class="chat-friend">
+        <% if chat.user == current_user %>
+            <% friend = chat.friend %>
+        <% else %>
+            <% friend = chat.user %>
+        <% end %>
+        <%= link_to user_path(friend) do %>
+            <%= image_tag(friend.profile_picture, class: 'chat-profile-pic') %>
+        <% end %>
+        <div class="user-date">
+        <%= link_to user_path(friend) do %>
+            <p class='chat-user'><%= friend.first_name+' '+friend.last_name %></p>
+        <% end %>
+        </div>
+    </div>
+    <div id="messages">
+        <% messages.each do |mes| %>
+            <% if mes.is_date %>
+                <div class='chat-date'>
+                    <p class='date'><%= mes.body %></p>
+                </div>
+                <% next %>
+            <% end %>
+            <% if mes.user_id == current_user.id %>
+                <div class='chat-message-user'>
+            <% else %>
+                <div class='chat-message'>
+            <% end %>
+                <p><%= mes.body %></p>
+                <p class="message-date"><%= mes.created_at.strftime('%R')%></p>
+                </div>
+            <% end %>
+    </div>
+    <%= turbo_frame_tag id='new_message', src: new_message_path(chat_id: chat.slug)%>
+</div>

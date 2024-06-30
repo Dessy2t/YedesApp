@@ -1,0 +1,34 @@
+<head>
+    <% stylesheet_link_tag 'general'%>
+</head>
+<%= render partial:'layouts/hero', locals: {'status': 'feed'}%>
+
+<div id="chats-container">
+    <div id="chats" data-controller='chat-deselect'>
+        <% @friends.each do |friend| %>
+            <% chat = find_chat(@chats, friend )%>
+            <%= link_to chat_path(chat), class: 'chat-box', remote: true, data: {turbo_stream: true, chat_id: chat.slug, 'controller': 'chat-select', 'chat-deselect-target': 'chat', 'chat-select-target': 'chat', 'action': 'click-> chat-deselect#clear chat-select#select'} do %>
+                <%= image_tag(friend.profile_picture, class: 'chat-profile-pic') %>
+                <div class="user-div">
+                    <p class='chat-user'><%= friend.first_name+' '+friend.last_name %></p>
+                    <div class="last">
+                        <% begin %>
+                            <% if chat.messages.last.user == current_user %>
+                                <p class='post-user' id='user-last-message'>You: <%= chat.messages.last.body%></p>
+                            <% else %>
+                                <p class='post-user' id='user-last-message'><%= chat.messages.last.body%></p>
+                            <% end %>
+                        <% rescue %>
+                        <% end %>
+                        <% unseen_chats = get_unseen(chat.id, current_user.id)%>
+                        <% unless unseen_chats.count == 0 %>
+                            <div class='messages-count'> <%= unseen_chats.count%> </div>
+                        <% end %>
+                    </div>
+                </div>
+            <% end %>
+        <% end %>
+    </div>
+    <div id='chat'></div>
+</div>
+<span class='hidden'><%= csrf_meta_tags %></span>
