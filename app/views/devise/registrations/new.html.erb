@@ -1,0 +1,53 @@
+<head>
+      <% stylesheet_link_tag 'general'%>
+      <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+</head>
+    <%= image_tag('bg8.jpg', class: 'background-img') %>
+    <div id='landing'>
+        <div id='landing-left'>
+            <p>SocialApp</p>
+        </div>
+        <div class='credits-1 credits'>
+            <span class="icon is-left has-text-light">
+                <i class="fas fa-camera"></i>
+            </span>
+            <a href="https://unsplash.com/@mohamadaz" target='_blank' >Mohammad Alizade</a>
+        </div>
+<%= turbo_frame_tag id='signup' do %>
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), data: {turbo: false}) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
+    <div id='form-names'>
+    <div class="field">
+      <%= f.text_field :first_name, placeholder: 'First name', required: true%>
+    </div>
+
+    <div class="field">
+      <%= f.text_field :last_name, placeholder: 'Last name', required: true%>
+    </div>
+    </div>
+
+    <div id="form-names">
+      <div class="field">
+        <%= f.email_field :email, placeholder: 'Email' , autocomplete: "email", required: true%>
+      </div>
+      <div class="field">
+        <%= f.text_field :birthday, onfocus: 'this.type="date"', placeholder: 'Birthday', required: true, max: Date.today- 10.years%>
+      </div>
+    </div>
+
+    <div id="form-names">
+      <div class="field">
+        <%= f.password_field :password, placeholder: 'Password', autocomplete: "new-password", required: true, minlength: 6%>
+      </div>
+      <div class="field">
+        <%= f.password_field :password_confirmation, placeholder: 'Password confirmation' , autocomplete: "new-password", required: true, minlength: 6%>
+      </div>
+    </div>
+
+    <div class="actions">
+      <%= f.submit "Sign up", class:'button is-small is-link'%>
+    </div>
+  <% end %>
+<% end %>
+
+<%= render "devise/shared/links" %>
