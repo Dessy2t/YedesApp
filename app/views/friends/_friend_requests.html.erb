@@ -1,0 +1,31 @@
+<head>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <% stylesheet_link_tag 'general'%>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script defer src='application.js'></script>
+</head>
+<body>
+    <div popover id="friendship">
+        <div class='friendship-bar'>
+            <% user.friend_requests.where(ignored: false).order('created_at DESC').each do |request|%>
+            <% sender = User.find(request.sender) %>
+            <div class='friend-requests'>
+                <%= link_to user_path(sender) do %>
+                    <%= image_tag(sender.profile_picture, class: 'profile-pic') %>
+                    <p class='notification-user'>
+                        <%= sender.first_name+' '+sender.last_name%>
+                    <% end %>
+                </p>
+            </div>
+            <div id='friend-request-options'>
+                <%= link_to friends_path(id: request.slug), data: {turbo_method: :post}, remote: true do %>
+                    <button class='button is-success is-light is-small'>Accept</button>
+                <% end %>
+                <%= link_to friend_request_path(request, friend_request: {ignored: true}), data: {turbo_method: :put}, remote: true do %>
+                    <button class='button is-danger is-light is-small'>Ignore</button>
+                <% end %>
+            </div>
+            <% end %>
+        </div>
+    </div>
+</body>
