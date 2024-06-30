@@ -1,0 +1,33 @@
+<body>
+    <div popover id="friendship">
+        <div class='requests-bar'>
+            <% friend_requests = user.friend_requests.where(ignored: false) %>
+            <% if friend_requests.count < 1 %>
+                <p id='nothing-bar'>There's nothing here yet</p>
+            <% else %>
+                <% friend_requests.order('created_at DESC').limit(7).each do |req| %>
+                <% sender = User.find(req.sender) %>
+                    <div class="request-item" data-controller='friendrequests'>
+                        <div class='friendrequest' data-friendrequests-target='frequest'>
+                            <%= image_tag(sender.profile_picture, class: 'request-profile-pic') %>
+                            <p class='request-user'>
+                                <%= link_to user_path(sender) do %>
+                                    <%= sender.first_name+' '+sender.last_name%>
+                                <% end %>
+                            </p>
+                            <div id='friend-request-options'>
+                                <%= link_to friends_path(id: req.slug), data: {turbo_method: :post}, remote: true do %>
+                                    <button class='button is-success is-light is-small' data-action='click->friendrequests#destroy'>Accept</button>
+                                <% end %>
+                                <%= link_to friend_request_path(req.slug, friend_request: {ignored: true}), data: {turbo_method: :put}, remote: true do %>
+                                    <button class='button is-danger is-light is-small' data-action='click->friendrequests#destroy'>Ignore</button>
+                                <% end %>
+                            </div>
+                        </div>
+                    </div>
+                <% end %>
+                    <%= link_to 'See all', friend_requests_path, id: 'see-notifications' %>
+            <% end %>
+        </div>
+    </div>
+</body>

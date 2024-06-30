@@ -1,0 +1,32 @@
+<head>
+    <% stylesheet_link_tag 'general'%>
+</head>
+<%= render partial:'layouts/hero', locals: {'status': 'feed'}%>
+<div class='requests-list' data-controller='friendrequests'>
+    <% @requests.each do |req| %>
+    <% sender = User.find(req.sender) %>
+    <% if req.ignored %>
+        <div class="hidden" data-friendrequests-target='hid'>
+    <% else %>
+        <div class="list-request-item" data-controller='friendrequests'>
+    <% end %>
+            <div class='friendrequest-index' data-friendrequests-target='frequest'>
+                <%= image_tag(sender.profile_picture, class: 'index-profile-pic') %>
+                <p class='request-user'>
+                    <%= link_to user_path(sender) do %>
+                        <%= sender.first_name+' '+sender.last_name%>
+                    <% end %>
+                </p>
+                <div id='friend-request-options'>
+                    <%= link_to friends_path(id: req.slug), data: {turbo_method: :post}, remote: true do %>
+                        <button class='button is-success is-dark is-small' data-action='click->friendrequests#destroy'>Accept</button>
+                    <% end %>
+                    <%= link_to friend_request_path(req, friend_request: {ignored: true}), data: {turbo_method: :put}, remote: true do %>
+                        <button class='button is-danger is-dark is-small' data-action='click->friendrequests#destroy'>Ignore</button>
+                    <% end %>
+                </div>
+            </div>
+        </div>
+    <% end %>
+    <button class='button is-small unfocused' data-action='friendrequests#ignored' data-friendrequests-target='show'>Show ignored requests</button>
+</div>
