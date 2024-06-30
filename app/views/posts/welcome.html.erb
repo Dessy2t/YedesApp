@@ -1,0 +1,28 @@
+<%= render partial:'layouts/hero', locals: {'status': 'feed'}%>
+<div id="welcome-index">
+    <p id="welcome-text">Welcome to SocialApp</p>
+    <div id='welcome-links'>
+        <div class="welcome-link">
+            <%= link_to user_path(@user) do %>
+                <%= image_tag(@user.profile_picture, class: 'welcome-profile-pic') %>
+            <% end %>
+            <%= link_to 'Go to your profile', user_path(@user)%>
+        </div>
+        <div class="welcome-link">
+        <%= link_to posts_path, class: 'welcome-link' do %>
+            <span class='icon is-large'>
+                <i class='fas fa-newspaper' id='welcome-icon'></i>
+            </span>
+        <% end %>
+        <%= link_to 'Go to your feed', posts_path%>
+        </div>
+        <div class="welcome-link">
+        <%= link_to users_path, class: 'welcome-link' do %>
+            <span class='icon is-large'>
+                <i class='fas fa-users' id='welcome-icon'></i>
+            </span>
+        <% end %>
+        <%= link_to 'Go to users list', users_path%>
+        </div>
+    </div>
+</div>

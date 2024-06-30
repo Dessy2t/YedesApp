@@ -1,0 +1,5 @@
+<%= turbo_stream.append "posts", post locals: {post: post, location: 'feed'} %>
+            format.turbo_stream do
+                    render turbo_stream: turbo_stream.append("posts", partial: "posts/post", collection: @feed.page(params[:page]),
+                        locals: {location: 'feed'})
+            end

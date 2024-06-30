@@ -1,0 +1,38 @@
+<%= turbo_frame_tag id='new-post-frame' do %>
+    <% post_type = params[:post_type]%>
+    <% if post_type == 'shared' %>
+        <div id='sharing-form'>
+    <% else %>
+        <div id='new-post'>
+    <% end %>
+        <div id="user-pic">
+            <%= image_tag(current_user.profile_picture, class: 'profile-pic') %>
+        </div>
+        <%= form_with model: @post, method: :post, id:'new-post-form' do |f| %>
+            <% if params[:is_page] %>
+                <%= f.hidden_field :page_id, :value => params[:page] %>
+            <% end %>
+            <% if post_type == 'shared'%>
+                <%= f.hidden_field :shared_post, :value => params[:post] %>
+            <% end %>
+            <div id="new-post-fields">
+                <% if post_type == 'new' %>
+                    <%= f.text_field :body, placeholder: "What's on your mind, #{current_user.first_name}?", id: 'text-field', required: true%>
+                <% else %>
+                    <%= f.text_field :body, placeholder: "Say something", id: 'text-field'%>
+                <% end %>
+                <% if post_type == 'new' %>
+                    <div id='post-image-field'>
+                        <%= f.label :image, 'Browse image', class: 'button is-shadow is-small', id: 'file-button'%>
+                        <%= f.file_field :image, accept: 'jpg, png'%>
+                    </div>
+                <% end %>
+            </div>
+            <% if post_type == 'shared' %>
+                <%= f.submit 'Share', class:'button is-link is-small', 'data-action': 'click->popover#close'%>
+            <% else %>
+                <%= f.submit 'Send', class:'button is-link is-small'%>
+            <% end %>
+        <% end %>
+    </div>
+<% end %>

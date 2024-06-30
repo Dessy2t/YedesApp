@@ -1,0 +1,43 @@
+<head>
+    <% stylesheet_link_tag 'general'%>
+    <script href='application.js' defer></script>
+</head>
+<%= render partial:'layouts/hero', locals: {'status': 'feed'}%>
+<div id='feed'>
+            <%= turbo_frame_tag id='new-post-frame', src: new_post_path(post_type: 'new')%>
+<div id='content'>
+    <div id='links'>
+    </div>
+    <div id="posts-container">
+        <div id="posts">
+            <% @feed.each do |post| %>
+                <%= render partial:'post', locals: {post: post, location: 'feed'}%>
+            <% end %>
+        </div>
+        <% unless @feed.next_page.nil? %>
+        <div class='load-posts' data-controller='pagination'>
+            <span class='hidden' data-pagination-target='maxPages'><%= @feed.total_pages %></span>
+            <%= link_to 'Load more', "/load_posts?page=1", remote: true, data: {turbo_method: :post, 'pagination-target': :link, action: 'click->pagination#update'}%>
+        </div>
+        <% end %>
+    </div>
+    <div id='people'>
+    <% unless @people.empty? %>
+            <p id='people-title'>People you might know</p>
+            <% @people.each do |p|%>
+                <div id="user-pic">
+                    <%= link_to user_path(p.slug) do %>
+                        <%= image_tag(p.profile_picture, class: 'profile-pic') %>
+                        <div id="user-date" data-controller='friendrequests'>
+                            <p id='post-user'><%= p.first_name+' '+p.last_name %></p>
+                            <%= link_to friend_requests_path(receiver: p.slug), data: {turbo_method: :post} do %>
+                                <button class='button is-small unfocused' data-friendrequests-target='button' data-action='click->friendrequests#change'>Add Friend</button>
+                            <% end %>
+                    <% end %>
+                    </div>
+                </div>
+            <% end %>
+    <% end %>
+    </div>
+</div>
+</div>

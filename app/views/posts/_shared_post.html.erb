@@ -1,0 +1,23 @@
+<div class='shared_post'>
+    <%= link_to post_path(post), class: 'link-post' do %>
+    <div class="user-pic">
+        <% if is_page %>
+            <%= image_tag(post.page.profile_picture, class: 'profile-pic') %>
+            <div class="user-date">
+                <p class='post-user'><%= post.page.name%></p>
+        <% else %>
+            <%= image_tag(post.user.profile_picture, class: 'profile-pic') %>
+            <div class="user-date">
+                <p class='post-user'><%= post.user.first_name+' '+post.user.last_name %></p>
+        <% end %>
+                <p class='post-date'><%= post.created_at.strftime('%D at %R') %></p>
+            </div>
+    </div>
+    <p class='post-body'><%= post.body %></p>
+    <% if post.image.attached? %>
+        <%= image_tag(post.image, class: 'post-pic') %>
+    <% end %>
+    <% end %>
+    <div class="post-lower">
+    </div>
+</div>

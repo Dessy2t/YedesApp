@@ -1,0 +1,78 @@
+<head>
+    <% stylesheet_link_tag 'general'%>
+</head>
+
+<div class=<%= location == 'feed' ? 'post-feed' : 'post'%>>
+    <% if post.page_id %>
+        <div class="user-pic">
+            <%= link_to page_path(post.page_id) do %>
+                <%= image_tag(post.page.profile_picture, class: 'profile-pic') %>
+            <% end %>
+            <div class="user-date">
+                <%= link_to page_path(post.page_id) do %>
+                    <p class='post-user'><%= post.page.name%></p>
+                <% end %>
+                <p class='post-date'><%= post.created_at.strftime('%D at %R') %></p>
+            </div>
+        </div>
+    <% else %>
+        <div class="user-pic">
+            <%= link_to user_path(post.user) do %>
+            <%= image_tag(post.user.profile_picture, class: 'profile-pic') %>
+            <% end %>
+            <div class="user-date">
+                <%= link_to user_path(post.user) do %>
+                    <p class='post-user'><%= post.user.first_name+' '+post.user.last_name %></p>
+                <% end %>
+                <p class='post-date'><%= post.created_at.strftime('%D at %R') %></p>
+            </div>
+        </div>
+    <% end %>
+    <%= link_to post_path(post), class: 'link-post' do %>
+        <p class='post-body'><%= post.body %></p>
+        <% if post.image.attached? %>
+            <%= image_tag(post.image, class: 'post-pic') %>
+        <% end %>
+    <% end %>
+    <% if post.shared_post.present? %>
+        <%= render partial:'posts/shared_post', locals: {'post': post.shared_post, is_page: post.shared_post.page_id}%>
+    <% end %>
+    <div class="post-lower">
+        <div class="post-info">
+            <span class="icon-text is-small is-centered has-text-link" id='reactions' data-controller='likes'>
+                <p class='reactions-count' data-likes-target='count'><%= post.reactions.count %></p>
+                <% if post.reactions.where(user_id: current_user.id).exists? %>
+                    <%= link_to reactions_path(post_id: post.slug), data: {turbo_method: :post, remote: :true, 'likes-target': 'button'} do %>
+                            <i class="fas fa-thumbs-up" data-action='click->likes#toggle'></i>
+                    <% end %>
+                <% else %>
+                    <%= link_to reactions_path(post_id: post.slug), class: 'unliked', data: {turbo_method: :post, remote: :true, 'likes-target': 'button'} do %>
+                            <i class="fas fa-thumbs-up" data-action='click->likes#toggle'></i>
+                    <% end %>
+                <% end %>
+            </span>
+            <span class="icon-text is-small is-centered has-text-link" id='comments-count'>
+                <p id='comment-count-<%=post.slug%>'><%= post.comments.count %></p>
+                <i class="fas fa-comments"></i>
+            </span>
+            <span class="icon-text is-small is-centered has-text-link" id='share'>
+                <p id='shares-count-<%=post.slug%>'><%= post.shares.count %></p>
+                <button popovertarget='share-post-<%= post.slug%>'><i class="fas fa-share is-medium"></i></button>
+                    <div popover id='share-post-<%= post.slug%>' data-controller='popover' data-popover-target='div'>
+                        <p id='sharing-title'>Sharing post</p>
+                         <%= turbo_frame_tag id='new-post-frame', src: new_post_path(post_type: 'shared', post: post.slug)%>
+                    </div>
+            </span>
+        </div>
+            <%= turbo_frame_tag id='comments-frame', src:new_comment_path(post_id: post.slug)%>
+        <div id='comments_<%=post.slug%>'>
+            <% comments = location == 'feed' ? post.comments.limit(3) : post.comments %>
+            <% comments.each do |comment| %>
+                <%= render partial: 'comments/comment', locals: {comment: comment}%>
+            <% end %>
+        </div>
+            <% if location == 'feed' && post.comments.count > 3 %>
+                <%= link_to 'View more comments', post_path(post, is_page: false), class: 'more-comments'%>
+            <% end %>
+    </div>
+</div>
