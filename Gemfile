@@ -10,6 +10,7 @@ gem "sprockets-rails"
 
 # Use sqlite3 as the database for Active Record
 gem "sqlite3", "~> 1.4"
+gem "pg"
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
@@ -65,3 +66,26 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "devise", "~> 4.9"
+
+gem "bulma-rails", "~> 0.9.4"
+
+gem 'image_processing', '~> 1.2'
+
+gem 'will_paginate', '~> 4.0'
+
+gem 'friendly_id', '~> 5.5.0'
+
+gem 'omniauth-google-oauth2'
+
+gem 'omniauth-rails_csrf_protection'
+
+gem 'figaro'
+
+
+gem "aws-sdk-s3", "~> 1.151"
+
+gem "sidekiq", "~> 7.2"
+
+gem "delayed_job_active_record"
