@@ -1,0 +1,21 @@
+<body>
+    <div popover id="notif">
+        <div class='notifications-bar'>
+            <% if current_user.notifications.where(seen: false).count > 0 %>
+                <%= link_to 'Mark all as seen', '/update_notifications', data: {turbo_method: :post, 'action': 'click->notifications#read', 'notifications-target': 'link'}, remote: true, class: 'notifications-read' %>
+            <% end %>
+            <% user.notifications.order('created_at DESC').limit(7).each do |notf| %>
+            <% if notf.seen %>
+                <div class='noti-seen'>
+            <% else %>
+                <div class='noti' data-notifications-target='notis'>
+            <% end %>
+                <%= render partial:'notifications/noti', locals: {noti: notf}%>
+            </div>
+            <% end %>
+            <% if current_user.notifications.count > 7 %>
+                <%= link_to 'See all', notifications_path, id: 'see-notifications' %>
+            <% end %>
+        </div>
+    </div>
+</body>

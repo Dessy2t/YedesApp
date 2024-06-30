@@ -1,0 +1,7 @@
+ <%= image_tag(noti.sender.profile_picture, class: 'profile-pic') %>
+<p class='notification-user'>
+    <%= link_to post_path(noti.post.slug) do %>
+        <%= noti.sender.first_name+' '+noti.sender.last_name+' '+noti.action+' your post'%>
+    <% end %>
+    <p class='noti-date'><%= noti.created_at.strftime('%D') %></p>
+</p>

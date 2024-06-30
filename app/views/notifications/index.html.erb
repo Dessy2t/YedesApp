@@ -1,0 +1,21 @@
+<head>
+    <% stylesheet_link_tag 'general'%>
+</head>
+<body>
+<%= render partial:'layouts/hero', locals: {'status': 'feed'}%>
+<div id="notification-list" data-controller='notifications'>
+    <%= link_to 'Mark all as seen', '/update_notifications', data: {turbo_method: :post, 'action': 'click->notifications#readList'}, remote: true, class: 'notifications-read' %>
+    <% unless @new.empty? %>
+        <% @new.each do |new_noti|%>
+            <div class='noti-list' data-notifications-target='notis'>
+                <%= render partial:'noti', locals: {noti: new_noti}%>
+            </div>
+        <% end %>
+    <% end %>
+    <% @seen.each do |seen_noti|%>
+        <div class='noti-seen-list'>
+            <%= render partial:'notifications/noti', locals: {noti: seen_noti}%>
+        </div>
+    <% end %>
+</div>
+</body>
