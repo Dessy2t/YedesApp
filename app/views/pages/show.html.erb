@@ -1,0 +1,56 @@
+<head>
+    <% stylesheet_link_tag 'general'%>
+</head>
+<%= render partial:'layouts/hero', locals: {'status': 'feed'}%>
+<div id="profile-pictures">
+    <%= image_tag(@page.cover_picture, class: 'cover-pic') %>
+    <div id='profile-info'>
+        <div id="info-pic-button">
+            <div id="profile-user-pic">
+                <%= image_tag(@page.profile_picture, id: 'user-profile-pic') %>
+            </div>
+            <div id="info-loc-age">
+                <p id='profile-name'><%= @page.name%></p>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="profile-lower">
+    <div id="user-boxes">
+        <div id='profile-user-bio'>
+                <div data-controller='truncate editprofile'>
+                    <p class='profile-title' data-editprofile-target='title'>Info</p>
+                    <p id='profile-bio' data-truncate-target='output' data-editprofile-target='bio'><%= @page.description %></p>
+                    <p class='small-text' data-truncate-target='seeMore' data-action='click->truncate#more' data-editprofile-target='seeMore'>See more</p>
+                </div>
+        </div>
+    <div id='profile-user-photos'>
+                <p class='profile-title'>Pictures</p>
+                <div id='photo-box'>
+                    <% @photos.each do |photo|%>
+                        <%= link_to post_path(photo) do %>
+                            <%= image_tag(photo.image, class: 'photo') %>
+                        <% end %>
+                    <% end %>
+                </div>
+        </div>
+    </div>
+    <div id="profile-content">
+    <% if @page.user == current_user %>
+        <div id="profile-new-post"><%= turbo_frame_tag id='new-post-frame', src: new_post_path(post_type: 'new', is_page: true, page: @page.slug)%></div>
+    <% end %>
+        <div id="posts-container">
+            <div id='posts'>
+                <% @posts.each do |post| %>
+                    <%= render partial:'posts/post', locals: {post: post, location: 'feed'}%>
+                <% end %>
+            </div>
+            <% unless @posts.next_page.nil? %>
+                <div class='load-posts-profile' data-controller='pagination'>
+                    <span class='hidden' data-pagination-target='maxPages'><%= @posts %></span>
+                    <%= link_to 'Load more', "/pages/#{@page.slug}?page=1", remote: true, data: {turbo_method: :post, 'pagination-target': :link, action: 'click->pagination#update'}%>
+                </div>
+            <%end %>
+        </div>
+    </div>
+</div>

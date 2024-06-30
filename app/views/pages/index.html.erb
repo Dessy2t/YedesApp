@@ -1,0 +1,17 @@
+<head>
+    <% stylesheet_link_tag 'general'%>
+</head>
+<body>
+<%= render partial:'layouts/hero', locals: {'status': 'feed'}%>
+<div id="notification-list">
+    <% current_user.pages.each do |page|%>
+        <div class='noti-list'>
+            <%= link_to page_path(page.uuid) do %>
+                <%# <%= image_tag(page.profile_picture, class: 'index-profile-pic') %> %>
+                <div class="index-user-info" data-controller='friendrequests'>
+                    <p id='post-user'><%= page.name %></p>
+            <% end %>
+        </div>
+    <% end %>
+</div>
+</body>
