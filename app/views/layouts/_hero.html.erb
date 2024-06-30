@@ -1,0 +1,53 @@
+<head>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <% stylesheet_link_tag 'general'%>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<div class="hero-container">
+    <a href= <%= posts_path %>>
+        <p class='hero-title'>SocialApp</p>
+    </a>
+    <div class="hero-right">
+        <div id="hero-icons">
+            <span class="icon is-medium is-left" data-controller='friendrequests'>
+                <button popovertarget='friendship' id='friends' data-action='click-> friendrequests#clear'>
+                    <% if current_user.friend_requests.where(ignored: false).count > 0 %>
+                        <div class='requests-count' data-friendrequests-target='count'></div>
+                    <% end %>
+                        <i class="fas fa-lg fa-users"></i>
+                </button>
+                <%= render partial: 'friend_requests/requests_bar', locals: {user: current_user} %>
+            </span>
+            <span class="icon is-medium is-left">
+                <%= link_to chats_path do%>
+                    <% unseen_chats = get_unseen_total(get_chats(current_user), current_user.id)%>
+                    <% if unseen_chats > 0 %>
+                        <div class='chats-count'><%=unseen_chats%></div>
+                    <% end %>
+                    <i class="fas fa-comment"></i>
+                <% end %>
+            </span>
+            <span class="icon is-medium is-link" data-controller='notifications'>
+                <button popovertarget='notif' id='notifications-bell'>
+                    <% if current_user.notifications.where(seen:false).count > 0 %>
+                        <div class='notifications-count' data-notifications-target='count'><%= current_user.notifications.where(seen:false).count%></div>
+                    <% end %>
+                    <i class="fas fa-lg fa-bell"></i>
+                    </button>
+                <%= render partial: 'notifications/notification_bar', locals: {user: current_user} %>
+            </span>
+        </div>
+            <div id= 'nav' data-controller='nav'>
+                <%= image_tag(current_user.profile_picture, class: 'hero-profile-pic', data: {'nav-target': 'pic', action: 'click->nav#display'}) %>
+                <div class='hidden' data-nav-target='menu'>
+                    <%= link_to 'Profile', user_path(current_user), class: 'menu-text'%>
+                    <%= link_to 'User list', users_path, class: 'menu-text'%>
+                    <% unless current_user.pages.empty? %>
+                        <%= link_to 'Pages', pages_path, class: 'menu-text'%>
+                    <% end %>
+                    <%= link_to 'Log out', destroy_user_session_path, data: { turbo_method: :delete }, class: 'menu-text'%>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
