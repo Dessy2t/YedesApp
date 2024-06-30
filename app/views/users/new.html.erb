@@ -1,0 +1,7 @@
+<%= form_for @user, method: :patch do |f| %>
+    <%= f.label :profile_picture %>
+    <%= f.file_field :profile_picture %>
+    <%= f.label :current_password%>
+    <%= f.password_field :current_password %>
+    <%= f.submit %>
+<% end %>

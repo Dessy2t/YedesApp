@@ -1,0 +1,28 @@
+<head>
+    <% stylesheet_link_tag 'general'%>
+</head>
+<body>
+<%= render partial:'layouts/hero', locals: {'status': 'feed'}%>
+<div id="user-index">
+    <% @users.each do |user| %>
+        <div class="user-card">
+                <%= link_to user_path(user.slug), class: 'index-link' do %>
+                    <%= image_tag(user.profile_picture, class: 'index-profile-pic') %>
+                    <div class="index-user-info" data-controller='friendrequests'>
+                        <p id='post-user'><%= user.first_name+' '+user.last_name %></p>
+                <% end %>
+                    <% status = friendship_status(user, current_user)%>
+                    <% if status == 'friends' %>
+                        <button class='button is-small is-ghost' disabled>Friends</button>
+                    <% elsif user == current_user %>
+                    <% elsif status == 'noFriends' %>
+                        <%= link_to friend_requests_path(receiver: user), data: {turbo_method: :post, controller: 'friendrequests'} do %>
+                            <button class='button is-small unfocused' data-friendrequests-target='button' data-action='click->friendrequests#change'>Add Friend</button>
+                        <% end %>
+                    <% else%>
+                            <button class='button is-small unfocused' disabled><%= @friendship %></button>
+                <% end %>
+            </div>
+        </div>
+    <% end %>
+</div>

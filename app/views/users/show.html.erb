@@ -1,0 +1,160 @@
+<head>
+    <% stylesheet_link_tag 'general'%>
+</head>
+<%= render partial:'layouts/hero', locals: {'status': 'feed'}%>
+<% if flash[:errors]%>
+    <div id="error-div-profile">
+        <% flash[:errors].each do |err|%>
+            <%= err%>
+        <% end %>
+    </div>
+<% end %>
+<% if @user == current_user %>
+    <%= form_with model: @user, data: {controller: 'editprofile', turbo: false}, id:'profile-pictures', method: :patch do |f| %>
+    <div id="cover-form">
+        <button type='button' class='edit-form' data-editprofile-target='coverLabel'>
+            <%= f.file_field :cover_picture, class: 'edit-form', data: {'editprofile-target': 'cover'}%></div>
+        </button>
+        <%= image_tag(@user.cover_picture, class: 'cover-pic') %>
+    <div id='profile-info'>
+        <div id="info-pic-button">
+            <div id="profile-user-pic">
+                <div id="pfp-form">
+                    <button type='button' class='edit-form' data-editprofile-target='profileLabel'>
+                        <%= f.file_field :profile_picture, class: 'edit-form', id: 'pfp-input',  data: {'editprofile-target': 'profile'}%>
+                    </button>
+                </div>
+                <%= image_tag(@user.profile_picture, id: 'user-profile-pic') %>
+            </div>
+            <div id="info-loc-age">
+                <p id='profile-name'><%= @user.first_name+' '+@user.last_name%></p>
+                <div id="location-age">
+                <div class="edit-form" id="location-edit" data-editprofile-target='location'>
+                    <%= f.label :location, 'Location: '%>
+                    <%= f.select(:location, Countries: @countries.values) %>
+                    <% unless @user.birthday %>
+                        <%= f.label :birthday, 'Birthday: '%>
+                        <%= f.date_field(:birthday, max: @min_date)%>
+                    <% end %>
+                </div>
+                <% unless @user.location.empty? || @user.location.downcase == 'none'%>
+                        <div id="profile-location" data-editprofile-target='currentLocation'>
+                            <p id='profile-location'><%= @user.location%></p>
+                            <%= image_tag("https://flagsapi.com/#{country_code(@user.location)}/flat/64.png", class:'flag')%>
+                        </div>
+                <% end %>
+                        <div id="profile-age">
+                            <%if @user.birthday %>
+                                <% age = (Date.today.year - @user.birthday.year).to_i %>
+                                <% if @user.birthday.yday > Date.today.yday then age = age-1 end%>
+                                <p>Age: <%= age %></p>
+                            <% end %>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        <div class='button is-small unfocused' data-editprofile-target='editButton' data-action='click->editprofile#edit'>Edit Profile</div>
+        <div class='edit-form' data-editprofile-target='cancel' data-action='click->editprofile#cancel'>Cancel</div>
+        <%= f.submit 'Save changes', class:'hidden', data: {'editprofile-target': 'submit'}%>
+    </div>
+<% end %>
+<% else %>
+    <div id="profile-pictures">
+        <%= image_tag(@user.cover_picture, class: 'cover-pic') %>
+        <div id='profile-info'>
+            <div id="info-pic-button">
+                <div id="profile-user-pic">
+                    <%= image_tag(@user.profile_picture, id: 'user-profile-pic') %>
+                </div>
+                <div id="info-loc-age">
+                    <p id='profile-name'><%= @user.first_name+' '+@user.last_name%></p>
+                    <div id="location-age">
+                    <% unless @user.location.empty? || @user.location == 'None'%>
+                            <div id="profile-location" data-editprofile-target='currentLocation'>
+                                <p id='profile-location'><%= @user.location%></p>
+                                <%= image_tag("https://flagsapi.com/#{country_code(@user.location)}/flat/64.png", class:'flag')%>
+                            </div>
+                    <% end %>
+                            <div id="profile-age">
+                                <%if @user.birthday %>
+                                    <% age = (Date.today.year - @user.birthday.year).to_i %>
+                                    <% if @user.birthday.yday > Date.today.yday then age = age-1 end%>
+                                    <p>Age: <%= age %></p>
+                                <% end %>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <% if @friendship == 'friends' %>
+                    <button popovertarget='confirmation' class='button is-small unfocused unfriendButton' data-controller= 'friendship' data-friendship-target='button' data-action='mouseover->friendship#destroy mouseout->friendship#restore'>Friends</button>
+                    <div popover id='confirmation' data-controller= 'friendship' data-friendship-target='confirmBox'>
+                        <div id="confirmation-box">
+                            <p id='confirmation-title'>Are you sure?</p>
+                            <p id='confirmation-text'>Press ESC to cancel</p>
+                            <%= link_to 'Unfriend', friend_path(find_friendship(current_user.slug, @user.slug)), data: {turbo_method: :delete, 'friendship-target': 'confirmButton', 'action': 'click->friendship#confirm'}, class:'button is-small is-danger'%>
+                        </div>
+                    </div>
+            <% elsif @friendship == 'noFriends' %>
+                <%= link_to friend_requests_path(receiver: @user.slug), data: {turbo_method: :post, controller: 'friendrequests'} do %>
+                    <button class='button is-small unfocused' data-friendrequests-target='button' data-action='click->friendrequests#change'>Add Friend</button>
+                <% end %>
+            <% else %>
+                    <button class='button is-small unfocused' disabled><%= @friendship %></button>
+            <% end %>
+        <% end %>
+    </div>
+</div>
+<div id="profile-lower">
+    <div id="user-boxes">
+        <div id='profile-user-bio'>
+                <div data-controller='truncate editprofile'>
+                    <% if @user == current_user %>
+                        <span class="icon" id="edit-bio" data-editprofile-target='button'>
+                            <i class="fas fa-edit has-text-link" data-action='click->editprofile#editBio'></i>
+                        </span>
+                        <%= form_with model: @user, data: {'editprofile-target': 'form', turbo: false}, class:'hidden', method: :patch do |f| %>
+                            <%= f.text_area :bio, value: @user.bio, class:'bio-text' %>
+                            <%= f.submit 'Save', class: 'button is-small is-link'%>
+                        <% end %>
+                    <% end %>
+                    <p class='profile-title' data-editprofile-target='title'>Info</p>
+                    <p id='profile-bio' data-truncate-target='output' data-editprofile-target='bio'><%= @user.bio %></p>
+                    <p class='small-text' data-truncate-target='seeMore' data-action='click->truncate#more' data-editprofile-target='seeMore'>See more</p>
+                </div>
+        </div>
+        <% if is_friend?(@user, current_user) || @user == current_user %>
+            <% unless @photos.nil? %>
+                <div id='profile-user-photos'>
+                    <p class='profile-title'>Pictures</p>
+                    <div id='photo-box'>
+                    <% @photos.each do |photo|%>
+                        <%= link_to post_path(photo) do %>
+                            <%= image_tag(photo.image, class: 'photo') %>
+                        <% end %>
+                    <% end %>
+                </div>
+            <% end %>
+        </div>
+        <% end %>
+    </div>
+    <div id="profile-content">
+    <% if @user == current_user %>
+        <div id="profile-new-post"><%= turbo_frame_tag id='new-post-frame', src: new_post_path(post_type: 'new')%></div>
+    <% end %>
+    <% if is_friend?(@user, current_user) || @user == current_user %>
+        <div id="posts-container">
+            <div id='posts'>
+                <% @posts.each do |post| %>
+                    <%= render partial:'posts/post', locals: {post: post, location: 'feed'}%>
+                <% end %>
+            </div>
+            <% unless @posts.next_page.nil? %>
+            <div class='load-posts-profile' data-controller='pagination'>
+                <span class='hidden' data-pagination-target='maxPages'><%= @posts.total_pages %></span>
+                <%= link_to 'Load more', "/users/#{@user.slug}?page=1", remote: true, data: {turbo_method: :post, 'pagination-target': :link, action: 'click->pagination#update'}%>
+            </div>
+            <% end %>
+        </div>
+    <% end %>
+    </div>
+</div>
